@@ -427,3 +427,15 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Docker local overrides
+docker-compose.override.yml
+
+# Datos de OpenProject (bind mounts)
+# pgdata: ignorar todo (Docker crea la carpeta vacía automáticamente al iniciar)
+data/pgdata/
+# assets y logs: ignorar contenido pero conservar la carpeta en git
+data/assets/*
+data/logs/*
+!data/assets/.gitkeep
+!data/logs/.gitkeep

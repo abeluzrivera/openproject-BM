@@ -1,0 +1,35 @@
+services:
+  openproject:
+    image: openproject/openproject:${OPENPROJECT_VERSION:-17}
+    container_name: openproject
+    restart: unless-stopped
+    ports:
+      - "${HOST_PORT:-9080}:80"
+    environment:
+      # Application
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      OPENPROJECT_HOST__NAME: ${OPENPROJECT_HOST_NAME:-localhost:9080}
+      OPENPROJECT_HTTPS: ${OPENPROJECT_HTTPS:-false}
+      OPENPROJECT_DEFAULT__LANGUAGE: ${OPENPROJECT_DEFAULT_LANGUAGE:-en}
+
+      # Optional: email settings
+      # OPENPROJECT_SMTP_ADDRESS: ${SMTP_ADDRESS:-}
+      # OPENPROJECT_SMTP_PORT: ${SMTP_PORT:-587}
+      # OPENPROJECT_SMTP_USER__NAME: ${SMTP_USER:-}
+      # OPENPROJECT_SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      # OPENPROJECT_SMTP_ENABLE__STARTTLS__AUTO: "true"
+
+    volumes:
+      # PostgreSQL data (built-in database)
+      - ./data/pgdata:/var/openproject/pgdata
+      # Uploaded attachments and assets
+      - ./data/assets:/var/openproject/assets
+      # Application logs
+      - ./data/logs:/var/log/supervisor
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health_checks/default"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
